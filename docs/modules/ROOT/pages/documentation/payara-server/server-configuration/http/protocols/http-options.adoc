@@ -394,11 +394,11 @@ To set the property you can use the following command:
 asadmin create-jvm-options --target=server-config "-Dorg.glassfish.grizzly.http.STRICT_HEADER_VALUE_VALIDATION_RFC_9110\=true"
 ----
 
-To test it you can make a call with curl adding an invalid Http Header Value using invalid characters:
+To test it you can make a call with curl adding an invalid HTTP Header Value using invalid characters:
 
 [source,shell]
 ----
-curl -i -v -H $"X-MyHeader: he\rllo" myendpoint
+curl -i -v -H $'X-MyHeader: he\rllo' myendpoint
 ----
 
 The result of this call with the enabled property will be as follows:
