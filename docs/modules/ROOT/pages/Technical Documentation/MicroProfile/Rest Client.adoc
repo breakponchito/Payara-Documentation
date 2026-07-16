@@ -180,3 +180,67 @@ asadmin add-library jersey-apache-connector-${jersey.version}.jar
 * {repo}/spec/src/main/asciidoc/async.asciidoc[MicroProfile Rest Client Asynchronous Configuration]
 * {repo}/spec/src/main/asciidoc/providers.asciidoc[MicroProfile Rest Client JAX-RS Providers]
 * {repo}/spec/src/main/asciidoc/ssl.asciidoc[MicroProfile Rest Client SSL Configuration Specifics]
+
+[[rest-client-upgrade-30-to-40]]
+== Upgrading from MicroProfile Rest Client 3.0 to 4.0
+
+MicroProfile Rest Client 4.0 (shipped with MicroProfile 7.0 and 7.1) introduces the following breaking changes over version 3.0 (shipped with MicroProfile 6.1). Users upgrading from Payara Platform Enterprise *6.8.0* (MicroProfile 6.1 support) to Payara Platform Enterprise *TBD* (MicroProfile 7.1 support) must apply these changes.
+
+[[rest-client-upgrade-restclient-required]]
+=== `@RestClient` Qualifier Is Now Required
+
+The `@RestClient` CDI qualifier was previously optional when injecting a Rest Client interface. It is now explicitly required. Any injection points that omit it must be updated:
+
+Old (3.0):
+[source, java]
+----
+@Inject
+private MyServiceClient client;
+----
+
+New (4.0):
+[source, java]
+----
+@Inject
+@RestClient
+private MyServiceClient client;
+----
+
+[[rest-client-upgrade-baseuri-string]]
+=== New `baseUri(String)` Convenience Method
+
+`RestClientBuilder` now accepts a `String` directly for the base URI, removing the need to call `URI.create()` manually:
+
+Old (3.0):
+[source, java]
+----
+RestClientBuilder.newBuilder()
+    .baseUri(URI.create("https://example.com/api"))
+    .build(MyClient.class);
+----
+
+New (4.0):
+[source, java]
+----
+RestClientBuilder.newBuilder()
+    .baseUri("https://example.com/api")
+    .build(MyClient.class);
+----
+
+[[rest-client-upgrade-header-method]]
+=== New `header(String, Object)` Method
+
+`RestClientBuilder` now provides a `header(String name, Object value)` method for setting default headers on all requests made by a client instance:
+
+[source, java]
+----
+RestClientBuilder.newBuilder()
+    .baseUri("https://example.com/api")
+    .header("Authorization", "Bearer " + token)
+    .build(MyClient.class);
+----
+
+[[rest-client-upgrade-scope-close]]
+=== CDI-Injected Clients Are Closed on Scope Exit
+
+The specification now explicitly states that when a CDI-injected Rest Client instance goes out of scope (e.g., a `@RequestScoped` bean is destroyed), the underlying client is closed automatically. This ensures proper cleanup of connections and resources without manual intervention.

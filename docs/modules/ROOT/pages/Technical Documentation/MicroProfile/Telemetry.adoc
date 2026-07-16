@@ -10,3 +10,106 @@ OpenTelemetry defines more types of signals.
 As of version {page-version} and in line with MicroProfile spec, support is only provided for Tracing aspects for the API.
 
 For more details about configuration of OpenTelemetry refer to xref:Technical Documentation/MicroProfile/OpenTelemetry and OpenTracing.adoc[OpenTelemetry documentation] for application development.
+
+[[telemetry-21-whats-new]]
+== What's New in MicroProfile Telemetry 2.1
+
+MicroProfile Telemetry 2.1 (included in MicroProfile 7.1) represents a significant advancement over version 1.1 (included in MicroProfile 6.1). The major capabilities described in this section — metrics support, logging integration, and the shared SDK model — were first introduced in Telemetry 2.0 as part of MicroProfile 7.0. Telemetry 2.1 (MicroProfile 7.1) is a minor refinement on top of 2.0.
+
+NOTE: Users upgrading from Payara Platform Enterprise *6.8.0* (MicroProfile 6.1 support) to Payara Platform Enterprise *TBD* (MicroProfile 7.1 support) are jumping across both 7.0 and 7.1, and all changes below apply to them.
+
+[[telemetry-21-metrics]]
+=== OpenTelemetry Metrics Support
+
+Full OpenTelemetry Metrics API support is now available. Applications can inject `io.opentelemetry.api.metrics.Meter` via CDI to create and record metrics:
+
+[source, java]
+----
+@ApplicationScoped
+public class OrderService {
+
+    @Inject
+    Meter meter;
+
+    private LongCounter orderCounter;
+
+    @PostConstruct
+    void init() {
+        orderCounter = meter.counterBuilder("orders.processed")
+            .setDescription("Total number of processed orders")
+            .setUnit("orders")
+            .build();
+    }
+
+    public void processOrder(Order order) {
+        orderCounter.add(1);
+        // process order...
+    }
+}
+----
+
+The runtime automatically provides the following platform metrics:
+
+* HTTP server request duration (`http.server.request.duration`)
+* JVM memory usage
+* JVM garbage collection metrics
+* JVM thread counts
+* JVM class loading statistics
+* JVM CPU usage
+
+[[telemetry-21-logging]]
+=== Logging Support
+
+MicroProfile Telemetry 2.1 bridges application logging frameworks (SLF4J, Log4j) into OpenTelemetry signals. Log records are routed through the OpenTelemetry Logs API and exported alongside traces and metrics, enabling correlated observability across all three signal types.
+
+[[telemetry-21-sdk-model]]
+=== Shared SDK Initialization Model
+
+In MicroProfile Telemetry 1.1, a separate OpenTelemetry SDK instance was created per deployed application. In 2.1, a single shared SDK instance is created at runtime startup when `otel.sdk.disabled=false` is configured. This shared instance is used by all deployed applications.
+
+To enable the OpenTelemetry SDK, set the following MicroProfile Config property at the runtime level (not per-application):
+
+----
+otel.sdk.disabled=false
+----
+
+[[telemetry-21-otel-version]]
+=== Updated OpenTelemetry Java Base
+
+The underlying OpenTelemetry Java library has been updated from version 1.29.0 (used in Telemetry 1.1) to version 1.48.0, bringing in all fixes and API improvements released between those versions.
+
+[[telemetry-upgrade-11-to-21]]
+== Upgrading from MicroProfile Telemetry 1.1 to 2.1
+
+[[telemetry-upgrade-http-semantics]]
+=== HTTP Semantic Convention Changes
+
+MicroProfile Telemetry 2.0 adopted the stabilized OpenTelemetry HTTP semantic conventions. Span attribute names for HTTP operations have changed. Any dashboards, alerts, or queries that reference old attribute names must be updated.
+
+Key renamed attributes:
+
+|===
+| Old attribute (Telemetry 1.1) | New attribute (Telemetry 2.1)
+
+| `http.method` | `http.request.method`
+| `http.status_code` | `http.response.status_code`
+| `http.url` | `url.full`
+| `http.target` | `url.path`
+| `net.peer.name` | `server.address`
+| `net.peer.port` | `server.port`
+|===
+
+For the full list refer to the https://opentelemetry.io/docs/specs/semconv/http/migration-guide/[OpenTelemetry HTTP semantic convention stability migration guide].
+
+[[telemetry-upgrade-sdk-init]]
+=== SDK Initialization Change
+
+In Telemetry 1.1, the SDK was initialized per application automatically. In Telemetry 2.1, the SDK must be explicitly enabled at the runtime level via `otel.sdk.disabled=false`. Applications that relied on per-application SDK initialization will need to move this configuration to the runtime level.
+
+If `otel.sdk.disabled` is not set (or is set to `true`), the SDK remains disabled and no telemetry signals are exported — matching the previous default behavior.
+
+[[telemetry-21-metrics-note]]
+=== Note on MicroProfile Metrics Removal
+
+MicroProfile Metrics has been removed from the MicroProfile platform starting from version 7.0 and is therefore also absent in 7.1. MicroProfile Telemetry 2.1 is now the primary observability API for metrics, traces, and logs on the Payara Platform. Refer to the
+xref:Technical Documentation/MicroProfile/Metrics/Metrics Configuration.adoc[MicroProfile Metrics pages] for context on what was previously available.

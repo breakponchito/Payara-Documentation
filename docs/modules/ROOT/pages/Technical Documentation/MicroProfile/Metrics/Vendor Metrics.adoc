@@ -1,6 +1,11 @@
 [[custom-vendor-metrics]]
 = Custom Vendor Metrics
 
+IMPORTANT: MicroProfile Metrics was removed from the MicroProfile platform starting from version 7.0 and is therefore also absent in 7.1.
+Users upgrading from Payara Platform Enterprise *6.8.0* (MicroProfile 6.1 support) to Payara Platform Enterprise *TBD* (MicroProfile 7.1 support) should migrate to
+xref:Technical Documentation/MicroProfile/Telemetry.adoc[MicroProfile Telemetry],
+which is the recommended observability API going forward.
+
 The Payara Platform supports exporting the JMX Beans and HealthCheck stats to the Vendor Metrics.
 
 [[JMX-MBeans]]

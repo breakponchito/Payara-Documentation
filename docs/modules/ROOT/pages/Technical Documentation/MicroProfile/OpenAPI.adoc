@@ -347,3 +347,113 @@ MicroProfile 4.0 brings with it a number of changes to MicroProfile OpenAPI, amo
 ** Server
 *** `setVariables(ServerVariables variables)` - Use `setVariables(Map)`.
 *** `variables(ServerVariables variables)` - Use `variables(Map)`.
+
+[[microprofile-openapi-upgrade-31-to-40]]
+== Upgrading from MicroProfile OpenAPI 3.1 to 4.0
+
+MicroProfile OpenAPI 4.0 (the baseline shipped with MicroProfile 7.0 and 7.1) introduces several breaking changes over version 3.1 (shipped with MicroProfile 6.1). Users upgrading from Payara Platform Enterprise *6.8.0* (MicroProfile 6.1 support) to Payara Platform Enterprise *TBD* (MicroProfile 7.1 support) must apply these changes.
+
+[[openapi-upgrade-output-format]]
+=== Output Document Format Changed to OpenAPI v3.1
+
+The `/openapi` endpoint now produces documents in **OpenAPI Specification v3.1** format instead of v3.0. Tooling that consumes the endpoint (code generators, validators, UI renderers) must support OpenAPI 3.1.
+
+[[openapi-upgrade-schema-type]]
+=== `Schema.type` Is Now a List
+
+The `type` property of the `Schema` model interface has changed from a single `SchemaType` enum value to a `List<SchemaType>`. Update any programmatic schema construction:
+
+Old (3.1):
+[source, java]
+----
+schema.setType(SchemaType.STRING);
+----
+
+New (4.0):
+[source, java]
+----
+schema.setType(List.of(SchemaType.STRING));
+----
+
+[[openapi-upgrade-nullable]]
+=== `nullable` Property Removed
+
+The `nullable` boolean property has been removed from the `Schema` interface. To express that a field accepts null, add `SchemaType.NULL` to the type list:
+
+Old (3.1):
+[source, java]
+----
+schema.setNullable(Boolean.TRUE);
+schema.setType(SchemaType.STRING);
+----
+
+New (4.0):
+[source, java]
+----
+schema.setType(List.of(SchemaType.STRING, SchemaType.NULL));
+----
+
+[[openapi-upgrade-exclusive-bounds]]
+=== `exclusiveMinimum` and `exclusiveMaximum` Are Now Numeric
+
+These properties have changed from `Boolean` to `BigDecimal`. They now hold the exclusive bound value directly rather than being a flag:
+
+Old (3.1):
+[source, java]
+----
+schema.setExclusiveMinimumBoolean(Boolean.TRUE);
+schema.setMinimum(new BigDecimal("0"));
+----
+
+New (4.0):
+[source, java]
+----
+schema.setExclusiveMinimum(new BigDecimal("0"));
+----
+
+[[openapi-upgrade-requestbody-required]]
+=== `@RequestBody.required` Defaults to `true`
+
+The `required` attribute of `@RequestBody` previously defaulted to `false`. It now defaults to `true`. Review any endpoints where the request body is genuinely optional and set `@RequestBody(required = false)` explicitly.
+
+[[openapi-upgrade-new-annotations]]
+=== New Annotations Available
+
+The following new annotations are available in the 4.0 API:
+
+* `@PathItem` — define a path item outside of a resource class
+* `@PathItemOperation` — associate an operation with a `@PathItem`
+* `@DependentRequired` — express conditional required properties on a schema
+* `@DependentSchema` — apply a schema conditionally based on a property's presence
+* `@PatternProperty` — define schema properties identified by a regex pattern
+
+[[openapi-upgrade-webhooks]]
+=== Webhooks Support
+
+The `OpenAPI` model and `@OpenAPIDefinition` annotation now support defining webhooks. Webhooks describe outbound calls that your API makes to a registered callback URL.
+
+[source, java]
+----
+@OpenAPIDefinition(
+    webhooks = @Webhook(
+        name = "orderStatusChanged",
+        operation = @Operation(
+            method = "post",
+            requestBody = @RequestBody(
+                content = @Content(mediaType = "application/json")
+            )
+        )
+    )
+)
+public class OrderApplication extends Application { }
+----
+
+[[openapi-upgrade-mutualtls]]
+=== New `MUTUALTLS` Security Scheme Type
+
+A new `SecurityScheme.Type.MUTUALTLS` enum value has been added to represent mutual TLS authentication schemes in your OpenAPI document.
+
+[[microprofile-openapi-whats-new-41]]
+== What's New in MicroProfile OpenAPI 4.1
+
+MicroProfile OpenAPI 4.1 is a minor release on top of 4.0. It contains no incompatible changes. The main update is an alignment with a newer revision of the OpenAPI base specification, along with several webhook-related improvements. Existing 4.0 code and configuration requires no modifications to run on 4.1.

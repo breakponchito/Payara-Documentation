@@ -112,3 +112,26 @@ In previous versions of MicroProfile Fault Tolerance, the lifecycle of `CircuitB
 `CircuitBreaker` and `Bulkhead` are now treated as singletons identified by the annotated bean class and the guarded method. This means that if a `RequestScoped` bean has a method annotated with `CircuitBreaker` and/or `Bulkhead`, all invocations of that method will share the same `CircuitBreaker` and/or `Bulkhead` state, even though each request will have a different instance of the annotated bean.
 
 There is unfortunately no workaround for this change in behaviour.
+
+[[fault-tolerance-whats-new-41]]
+== What's New in MicroProfile Fault Tolerance 4.1
+
+MicroProfile Fault Tolerance 4.1 (shipped with MicroProfile 7.0 and 7.1) is a minor, non-breaking release over 4.0. There are no incompatible changes — existing code and configuration continues to work without modification.
+
+NOTE: Users upgrading from Payara Platform Enterprise *6.8.0* (MicroProfile 6.1 support) to Payara Platform Enterprise *TBD* (MicroProfile 7.1 support) will encounter this update, as Fault Tolerance 4.0 (shipped with MicroProfile 6.1) is upgraded to 4.1.
+
+[[fault-tolerance-41-telemetry-metrics]]
+=== MicroProfile Telemetry Metrics Integration
+
+Fault Tolerance 4.1 adds support for exporting fault tolerance metrics through the MicroProfile Telemetry Metrics API (OpenTelemetry), in addition to the existing MicroProfile Metrics export path.
+
+The following fault tolerance metrics are exported to Telemetry when MicroProfile Telemetry is active:
+
+* Retry call counts (total, retried, retry max retries exceeded)
+* Timeout durations and call counts (timed out vs not timed out)
+* Circuit breaker call counts by state (open, half-open, closed) and outcome
+* Bulkhead accepted and rejected call counts, and queue wait time
+* Fallback call counts
+
+To enable this, ensure MicroProfile Telemetry is active (`otel.sdk.disabled=false`) and no additional configuration is required. Refer to
+xref:Technical Documentation/MicroProfile/Telemetry.adoc[MicroProfile Telemetry documentation] for setup details.

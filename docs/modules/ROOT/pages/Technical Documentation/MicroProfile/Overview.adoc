@@ -11,6 +11,17 @@ Payara has been part of the MicroProfile project from its inception and, therefo
 
 == Payara Support for MicroProfile
 
+Version 7.1::
+Version 7.1 of MicroProfile is a minor release that builds on the significant structural changes introduced in version 7.0.
+
+Version 7.0 brought the most impactful changes when upgrading from 6.1: MicroProfile Metrics was removed from the platform and replaced by MicroProfile Telemetry 2.0, which provides a unified observability solution covering tracing, metrics, and logging under the OpenTelemetry umbrella. In addition, Fault Tolerance was updated to 4.1, OpenAPI to 4.0, and Rest Client to 4.0 — all of which include breaking changes that may require migration work.
+
+Version 7.1 then introduces minor updates on top of 7.0: Telemetry advances to 2.1 and OpenAPI to 4.1, both maintaining backward compatibility with their 7.0 counterparts.
+
+Both versions align with Jakarta EE 10 Core Profile and require Java SE 11 or higher.
+
+This is supported by Payara Platform Enterprise starting from release *TBD* onwards
+
 Version 6.1::
 Version 6.1 of MicroProfile is a minor release that updates Metrics, Config and Telemetry. Also, this version aligns with Jakarta EE 10 Core Profile and continues with the `jakarta.*` namespace alignment and allows to be certified with Java SE 11 or higher.
 
@@ -28,6 +39,27 @@ This is supported by the Payara Platform Community starting from release *6.2023
 |Version
 |Specifications
 |Maven
+
+| 7.1
+|
+* https://jakarta.ee/specifications/coreprofile/10/jakarta-coreprofile-spec-10.0[Jakarta EE Core Profile 10.0]
+* https://download.eclipse.org/microprofile/microprofile-config-3.1/microprofile-config-spec-3.1.html[Config 3.1]
+* https://download.eclipse.org/microprofile/microprofile-health-4.0.1/microprofile-health-spec-4.0.1.html[Health Check 4.0]
+* https://download.eclipse.org/microprofile/microprofile-fault-tolerance-4.1/microprofile-fault-tolerance-spec-4.1.html[Fault Tolerance 4.1]
+* https://download.eclipse.org/microprofile/microprofile-jwt-auth-2.1/microprofile-jwt-auth-spec-2.1.html[JWT Authentication 2.1]
+* https://download.eclipse.org/microprofile/microprofile-open-api-4.1/microprofile-openapi-spec-4.1.html[OpenAPI 4.1]
+* https://download.eclipse.org/microprofile/microprofile-rest-client-4.0/microprofile-rest-client-spec-4.0.html[Rest Client 4.0]
+* https://download.eclipse.org/microprofile/microprofile-telemetry-2.1/microprofile-telemetry-spec-2.1.html[Telemetry 2.1]
+| [source, xml]
+----
+<dependency>
+    <groupId>org.eclipse.microprofile</groupId>
+    <artifactId>microprofile</artifactId>
+    <version>7.1</version>
+    <type>pom</type>
+    <scope>provided</scope>
+</dependency>
+----
 
 | 6.1
 |

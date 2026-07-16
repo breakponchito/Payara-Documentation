@@ -1,6 +1,11 @@
 [[metrics-configuration]]
 = Metrics Configuration in Payara Platform
 
+IMPORTANT: MicroProfile Metrics was removed from the MicroProfile platform starting from version 7.0 and is therefore also absent in 7.1.
+Users upgrading from Payara Platform Enterprise *6.8.0* (MicroProfile 6.1 support) to Payara Platform Enterprise *TBD* (MicroProfile 7.1 support) should migrate to
+xref:Technical Documentation/MicroProfile/Telemetry.adoc[MicroProfile Telemetry],
+which is the recommended observability API going forward.
+
 On Payara Server, the MicroProfile Metrics service can be configured by using Admin Console or Asadmin commands.
 
 Payara Micro doesn't have a convenient solution for its MicroProfile Metrics service configuration yet.
